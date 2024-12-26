@@ -8,6 +8,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
+from .permissions import CheckOwner, CheckOwnerPost, CheckCRUD
 
 
 class RegisterView(generics.CreateAPIView):
@@ -47,6 +48,7 @@ class LogoutView(generics.GenericAPIView):
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     serializer_class = UserProfileSerializer
+    permission_classes = [CheckOwner]
 
     def get_queryset(self):
         return UserProfile.objects.filter(id=self.request.user.id)
@@ -55,6 +57,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 class FollowViewSet(viewsets.ModelViewSet):
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
+    permission_classes = [CheckCRUD]
 
 
 class PostPagination(PageNumberPagination):
@@ -70,34 +73,40 @@ class PostListViewSet(viewsets.ModelViewSet):
     filterset_class = PostFilter
     ordering_fields = ['post', 'created_at']
     pagination_class = PostPagination
+    permission_classes = [CheckCRUD]
 
 
 class PostLikeViewSet(viewsets.ModelViewSet):
     queryset = PostLike.objects.all()
     serializer_class = PostLikeSerializer
+    permission_classes = [CheckOwnerPost]
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    permission_classes = [CheckCRUD]
 
 
 class CommentLikeViewSet(viewsets.ModelViewSet):
     queryset = CommentLike.objects.all()
     serializer_class = CommentLikeSerializer
+    permission_classes = [CheckOwnerPost]
 
 
 class StoryViewSet(viewsets.ModelViewSet):
     queryset = Story.objects.all()
     serializer_class = StorySerializer
+    permission_classes = [CheckCRUD]
 
 
 class SavedViewSet(viewsets.ModelViewSet):
     queryset = Saved.objects.all()
     serializer_class = SavedSerializer
+    permission_classes = [CheckOwner]
 
 
 class SaveItemViewSet(viewsets.ModelViewSet):
     queryset = SaveItem.objects.all()
     serializer_class = SaveItemSerializer
-
+    permission_classes = [CheckOwner]
